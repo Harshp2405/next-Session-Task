@@ -14,21 +14,43 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model user {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
-  email    String    @unique
-  password String
-  name     String
-  role     String   
+  id            String    @id @map("_id") @default(auto()) @db.ObjectId
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  password      String?
+  role          String    @default("Intern") // "Admin" or "Intern"
+  createdAt     DateTime @default(now())
+  accounts Account[]
   sessions Session[]
-  createdAt DateTime @default(now())
+}
+
+model Account {
+  id                 String  @id @map("_id") @default(auto()) @db.ObjectId
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user user @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
 }
 
 model Session {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  token     String   @unique
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id           String   @id @map("_id") @default(auto()) @db.ObjectId
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user user @relation(fields: [userId], references: [id])
 }

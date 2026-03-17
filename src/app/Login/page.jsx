@@ -5,18 +5,12 @@ import * as Yup from "yup";
 import { useState } from "react";
 import { useRouter } from "next/navigation"; 
 import { useDispatch, useSelector } from "react-redux";
-import { loginSuccess } from "../../redux/authSclice";
-
+import { signIn } from "next-auth/react";
+import { loadUser } from "../../redux/authActions";
 export default function Login() {
 	const [message, setMessage] = useState({ text: "", isError: false });
 	const router = useRouter();
 	const dispatch = useDispatch();
-
-
-	const { user, token, isLoggedIn } = useSelector((state) => state.auth);
-	console.log("Logged In:", isLoggedIn);
-	console.log("User:", user);
-
 
 	const initialValues = {
 		email: "",
@@ -32,54 +26,39 @@ export default function Login() {
 			.required("Password is required"),
 	});
 
+
+
 	const handleSubmit = async (values, { setSubmitting }) => {
+		setSubmitting(true);
 		setMessage({ text: "", isError: false });
 
 		try {
-			const res = await fetch("/api/login", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(values),
-				credentials: "include",
+			// Sign in using NextAuth credentials
+			const result = await signIn("credentials", {
+				redirect: false,
+				email: values.email,
+				password: values.password,
 			});
 
-			let data;
-			try {
-				data = await res.json();
-			} catch (err) {
-				console.error("Failed to parse JSON:", err);
-				setMessage({ text: "Server returned invalid response", isError: true });
-				return;
-			}
-
-
-			if (res.ok) {
+			if (result.error) {
+				setMessage({ text: result.error, isError: true });
+			} else {
 				setMessage({
 					text: "Login successful! Redirecting...",
 					isError: false,
 				});
 
-				dispatch(
-					loginSuccess({
-						user: data.user,
-						token: data.token,
-					}),
-				);
+				// Load session user into Redux
+				await dispatch(loadUser());
 
-				document.cookie = `token=${data.token}; path=/;`;
-
-				setTimeout(() => router.push("/"), 400);
-			} else {
-				setMessage({
-					text: data.error || "Invalid credentials",
-					isError: true,
-				});
+				// Redirect to homepage
+				router.push("/");
 			}
-		} catch (error) {
-			setMessage({ text: "Server connection failed", isError: true });
-			console.log(error);
+		} catch (err) {
+			console.error("Login failed:", err);
+			setMessage({ text: "Server error occurred", isError: true });
 		} finally {
-			setSubmitting(false); // ALWAYS executes
+			setSubmitting(false); // always stop spinner
 		}
 	};
 

@@ -34,39 +34,33 @@
 // middleware.js
 import { NextResponse } from "next/server";
 import { jwtVerify } from "jose";
+import { getToken } from "next-auth/jwt";
 
 export async function proxy(req) {
-	const token = req.cookies.get("token")?.value;
-	const { pathname } = req.nextUrl;
+	const url = req.nextUrl.clone();
+	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+	const { pathname } = url;
 
-	const isPublicPath = pathname === "/Login" || pathname === "/Register";
+	const publicPaths = ["/Login", "/Register", "/api/auth"];
+	const isPublic = publicPaths.some((path) => pathname.startsWith(path));
 
-	// 1️⃣ Not logged in
-	if (!token && !isPublicPath) {
+	if (!token && !isPublic) {
 		return NextResponse.redirect(new URL("/Login", req.url));
 	}
 
 	if (token) {
-		try {
-			const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-			const { payload } = await jwtVerify(token, secret);
+		const role = token.role;
 
-			const role = payload.role;
+		if (pathname.startsWith("/Admin") && role !== "Admin") {
+			return NextResponse.redirect(new URL("/", req.url));
+		}
 
-			if (isPublicPath) {
-				return NextResponse.redirect(new URL("/", req.url));
-			}
+		if (pathname.startsWith("/Intern") && role !== "Intern") {
+			return NextResponse.redirect(new URL("/", req.url));
+		}
 
-			if (pathname.startsWith("/Admin") && role !== "Admin") {
-				return NextResponse.redirect(new URL("/", req.url));
-			}
-
-			if (pathname.startsWith("/Intern") && role !== "Intern") {
-				return NextResponse.redirect(new URL("/", req.url));
-			}
-
-		} catch (error) {
-			return NextResponse.redirect(new URL("/Login", req.url));
+		if (isPublic) {
+			return NextResponse.redirect(new URL("/", req.url));
 		}
 	}
 

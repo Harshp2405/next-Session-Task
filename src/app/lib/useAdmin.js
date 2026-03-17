@@ -9,7 +9,17 @@ export const userlist = async () => {
 		orderBy: {
 			createdAt: "desc",
 		},
+		select:{
+			id: true,
+			name: true,
+			email: true,
+			password: false,
+			role: true,
+			createdAt: true,
+		}			
+
 	});
 
 	return users;
 };
+

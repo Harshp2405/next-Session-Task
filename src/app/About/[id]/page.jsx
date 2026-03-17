@@ -3,7 +3,12 @@ import { useParams } from 'next/navigation'
 
 import { useRouter } from "next/navigation";
 import { useSelector } from 'react-redux';
+import { loadUser } from '../../../redux/authActions';
 const Subabout = () => {
+
+	const user = useSelector((state) => state.auth.user);
+	console.log(user);
+	
     const blog = [
 			{ id: 1, title: "Getting Started with Next.js", href: "/About/1" },
 			{ id: 2, title: "Mastering Tailwind CSS", href: "/About/2" },
@@ -14,7 +19,6 @@ const Subabout = () => {
     const router = useRouter()
     const { id } = useParams()
 
-	const { user, token, isLoggedIn } = useSelector((state) => state.auth);
 // console.log(user);
 
     const post = blog.find((blog)=>( blog.id.toLocaleString() === id ))

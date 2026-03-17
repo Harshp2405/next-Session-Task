@@ -1,24 +1,18 @@
-import { loginSuccess, logout } from "./authSclice";
+import { setUser, logout } from "./authSclice";
+import { getSession } from "next-auth/react";
 
 export const loadUser = () => async (dispatch) => {
 	try {
-		const res = await fetch("/api/me");
+		const session = await getSession();
 
-		if (!res.ok) {
+		if (!session?.user) {
 			dispatch(logout());
 			return;
 		}
 
-		const data = await res.json();
-
-        console.log(data , " =====================================data")
-		dispatch(
-			loginSuccess({
-				user: data.user,
-				token: null,
-			}),
-		);
+		dispatch(setUser(session.user));
 	} catch (error) {
+		console.error("Failed to load user:", error);
 		dispatch(logout());
 	}
 };
