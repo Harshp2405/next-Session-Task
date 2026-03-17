@@ -1,16 +1,27 @@
-import React from 'react'
+"use client";
 
-import { userlist } from '../../lib/useAdmin';
+import { useEffect } from "react";
+import { getSingleUser, userlist } from "../../lib/useAdmin";
 
-const Admin = async () => {
-  const user = await userlist();
-  console.log(user)
 
-  console.log(user , " user List====================================================")
+export default function Admin() {
+	useEffect(() => {
+		const fetchUsers = async () => {
+			const users = await userlist();
+			console.log(users , "All Users ==================================");
+		};
+		fetchUsers();
+	}, []);
 
-  return (
-    <div>Admin page</div>
-  )
+	const handleClick = async () => {
+		const user = await getSingleUser("69b8db248099b8293368bb8d");
+		console.log(user , "Single User===================================");
+	};
+
+	return (
+		<div>
+			Admin page
+			<button onClick={handleClick}>Click</button>
+		</div>
+	);
 }
-
-export default Admin
