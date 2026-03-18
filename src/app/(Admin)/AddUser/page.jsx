@@ -11,19 +11,22 @@ export default function Register() {
 
     // 1. Define the Validation Schema
     const validationSchema = Yup.object({
-        name: Yup.string()
-            .min(2, "Name is too short")
-            .max(50, "Name is too long")
-            .required("Full name is required"),
-        email: Yup.string()
-            .email("Invalid email address")
-            .required("Email is required"),
-        password: Yup.string()
-            .min(8, "Password must be at least 8 characters")
-            .matches(/[A-Z]/, "Must contain one uppercase letter")
-            // .matches(/[0-9]/, "Must contain one number")
-            .required("Password is required"),
-    });
+			name: Yup.string()
+				.min(2, "Name is too short")
+				.max(50, "Name is too long")
+				.required("Full name is required"),
+			email: Yup.string()
+				.email("Invalid email address")
+				.required("Email is required"),
+			password: Yup.string()
+				.min(8, "Password must be at least 8 characters")
+				.matches(/[A-Z]/, "Must contain one uppercase letter")
+				// .matches(/[0-9]/, "Must contain one number")
+				.required("Password is required"),
+
+			gender :Yup.string().required("Required"),
+			role :Yup.string().required("Required"),
+		});
 
     // 2. Initialize Formik
     const formik = useFormik({
@@ -32,6 +35,8 @@ export default function Register() {
             email: "",
             password: "",
             role: "",
+			college:"",
+			gender:"",
         },
         validationSchema: validationSchema,
         onSubmit: async (values, { setSubmitting, resetForm }) => {
@@ -41,8 +46,9 @@ export default function Register() {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(values),
                 });
+				// console.log(values);
                 const data = await res.json();
-                console.log("Server Response:", data);
+                // console.log("Server Response:", data);
 
                 if (res.ok) {
                     router.push("/Admin");
@@ -78,7 +84,7 @@ export default function Register() {
 								name="name"
 								type="text"
 								{...formik.getFieldProps("name")}
-								className={`w-full px-4 py-2 border rounded-lg outline-none transition-all text-black ${
+								className={`w-full px-4 py-2 border rounded-lg bg-white  outline-none transition-all text-black ${
 									formik.touched.name && formik.errors.name
 										? "border-red-500 ring-1 ring-red-500"
 										: "border-gray-300 focus:ring-2 focus:ring-blue-500"
@@ -100,7 +106,7 @@ export default function Register() {
 								name="email"
 								type="email"
 								{...formik.getFieldProps("email")}
-								className={`w-full px-4 py-2 border rounded-lg outline-none transition-all text-black ${
+								className={`w-full px-4 py-2 border rounded-lg bg-white  outline-none transition-all text-black ${
 									formik.touched.email && formik.errors.email
 										? "border-red-500 ring-1 ring-red-500"
 										: "border-gray-300 focus:ring-2 focus:ring-blue-500"
@@ -131,6 +137,83 @@ export default function Register() {
 							{formik.touched.password && formik.errors.password && (
 								<p className="text-red-500 text-xs mt-1">
 									{formik.errors.password}
+								</p>
+							)}
+						</div>
+						<div>
+							<label className="block text-sm font-medium text-white mb-1">
+								college
+							</label>
+							<input
+								name="college"
+								type="text"
+								{...formik.getFieldProps("college")}
+								className={`w-full px-4 py-2 border rounded-lg outline-none bg-white transition-all text-black ${
+									formik.touched.college && formik.errors.college
+										? "border-red-500 ring-1 ring-red-500"
+										: "border-gray-300 focus:ring-2 focus:ring-blue-500"
+								}`}
+							/>
+							{formik.touched.college && formik.errors.college && (
+								<p className="text-red-500 text-xs mt-1">
+									{formik.errors.college}
+								</p>
+							)}
+						</div>
+						<div>
+							<label className="block text-sm font-medium text-white mb-2">
+								Role
+							</label>
+
+							<div className="flex gap-4">
+								{["Intern", "Admin", "Head"].map((g) => (
+									<label key={g} className="flex items-center gap-2 text-white">
+										<input
+											type="radio"
+											name="role"
+											value={g}
+											checked={formik.values.role === g}
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											className="accent-blue-500"
+										/>
+										{g.charAt(0) + g.slice(1).toLowerCase()}
+									</label>
+								))}
+							</div>
+
+							{formik.touched.gender && formik.errors.gender && (
+								<p className="text-red-500 text-xs mt-1">
+									{formik.errors.gender}
+								</p>
+							)}
+						</div>
+
+						<div>
+							<label className="block text-sm font-medium text-white mb-2">
+								Gender
+							</label>
+
+							<div className="flex gap-4">
+								{["MALE", "FEMALE", "OTHER"].map((g) => (
+									<label key={g} className="flex items-center gap-2 text-white">
+										<input
+											type="radio"
+											name="gender"
+											value={g}
+											checked={formik.values.gender === g}
+											onChange={formik.handleChange}
+											onBlur={formik.handleBlur}
+											className="accent-blue-500"
+										/>
+										{g.charAt(0) + g.slice(1).toLowerCase()}
+									</label>
+								))}
+							</div>
+
+							{formik.touched.gender && formik.errors.gender && (
+								<p className="text-red-500 text-xs mt-1">
+									{formik.errors.gender}
 								</p>
 							)}
 						</div>

@@ -48,7 +48,6 @@ export default function Register() {
 					router.push("/Login");
 					resetForm();
 				} else {
-
 					console.error("Registration failed:", data.error);
 					alert(data.error?.message || data.error || "Registration failed");
 				}

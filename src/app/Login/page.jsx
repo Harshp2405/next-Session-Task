@@ -39,7 +39,7 @@ export default function Login() {
 				email: values.email,
 				password: values.password,
 			});
-			console.log(values , "FrontEnd");
+
 
 			if (result.error) {
 				setMessage({ text: result.error, isError: true });

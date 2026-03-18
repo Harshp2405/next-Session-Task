@@ -55,18 +55,36 @@ datasource db {
 //   user user @relation(fields: [userId], references: [id])
 // }
 
-
 model user {
-  id            String    @id @default(uuid())  
+  id            String    @id @default(uuid())
   name          String?
   email         String?   @unique
   emailVerified DateTime?
   password      String?
-  role          String    @default("Intern")
+  role          String      @default("Intern")
   createdAt     DateTime  @default(now())
+  college       String?
+  gender        String
+
+  departmentId  String?
+  department    Department? @relation("DepartmentMembers", fields: [departmentId], references: [id])
+
+  headOf        Department? @relation("DepartmentHead")
 
   accounts      Account[]
   sessions      Session[]
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String
+
+  headId    String   @unique
+  head      user     @relation("DepartmentHead", fields: [headId], references: [id])
+
+  members   user[]   @relation("DepartmentMembers")
+
+  createdAt DateTime @default(now())
 }
 
 model Account {
@@ -96,3 +114,4 @@ model Session {
 
   user user @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+

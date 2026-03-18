@@ -6,7 +6,8 @@ export async function POST(req) {
 	try {
 		const body = await req.json();
 
-		const { name, email, password, role } = body;
+		const { name, email, password, role , college,
+			gender } = body;
 
 		if (!name || !email || !password) {
 			return NextResponse.json(
@@ -34,6 +35,8 @@ export async function POST(req) {
 				email,
 				password: hashedPassword,
 				role: role || "Intern",
+				college:college || "",
+				gender,
 			},
 		});
 
