@@ -31,6 +31,7 @@ const NavItems: NavLink[] = [
 	{ label: "About us", href: "/About" },
 	{ label: "Intern", href: "/Intern", roles: ["Intern"] },
 	{ label: "Admin", href: "/Admin", roles: ["Admin"] },
+	{ label: "Add User", href: "/AddUser", roles: ["Admin"] },
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ title, links = NavItems }) => {
