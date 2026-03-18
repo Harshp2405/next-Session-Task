@@ -7,7 +7,7 @@ import { loadUser } from '../../../redux/authActions';
 const Subabout = () => {
 
 	const user = useSelector((state) => state.auth.user);
-	console.log(user);
+	// console.log(user);
 	
     const blog = [
 			{ id: 1, title: "Getting Started with Next.js", href: "/About/1" },

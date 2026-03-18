@@ -8,14 +8,14 @@ export default function Admin() {
 	useEffect(() => {
 		const fetchUsers = async () => {
 			const users = await userlist();
-			console.log(users , "All Users ==================================");
+			// console.log(users , "All Users ==================================");
 		};
 		fetchUsers();
 	}, []);
 
 	const handleClick = async () => {
 		const user = await getSingleUser("69b8db248099b8293368bb8d");
-		console.log(user , "Single User===================================");
+		// console.log(user , "Single User===================================");
 	};
 
 	return (
