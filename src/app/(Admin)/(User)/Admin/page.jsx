@@ -2,8 +2,9 @@
 
 
 import { useEffect, useState } from "react";
-import { getSingleUser, userlist } from "../../lib/useAdmin";
+import { getSingleUser, userlist } from "../../../lib/useAdmin";
 import { useRouter } from "next/navigation";
+
 
 export default function Admin() {
 	const [users, setUsers] = useState([]);
@@ -13,6 +14,7 @@ export default function Admin() {
 	useEffect(() => {
 		const fetchUsers = async () => {
 			const data = await userlist();
+			console.log(data)
 			setUsers(data);
 		};
 		fetchUsers();
@@ -20,7 +22,8 @@ export default function Admin() {
 
 	const handleClick = async (id) => {
 		const user = await getSingleUser(id);
-		router.push(`/${id}`)
+		console.log(user)
+		// router.push(`/${id}`)
 		// setSelectedUser(user);
 	};
 

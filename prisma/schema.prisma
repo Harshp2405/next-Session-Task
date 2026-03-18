@@ -68,6 +68,7 @@ model user {
 
   departmentId  String?
   department    Department? @relation("DepartmentMembers", fields: [departmentId], references: [id])
+  isHead        Boolean   @default(false)
 
   headOf        Department? @relation("DepartmentHead")
 

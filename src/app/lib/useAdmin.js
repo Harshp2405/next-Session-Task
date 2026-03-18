@@ -1,25 +1,90 @@
 "use server";
+import { hasuraFetch } from "./hasura";
 import { prisma } from "./prisma";
 
+// Return Interns
 export const userlist = async () => {
-	const users = await prisma.user.findMany({
-		where: {
-			role: "Intern",
-		},
-		orderBy: {
-			createdAt: "desc",
-		},
-		select: {
-			id: true,
-			name: true,
-			email: true,
-			password: false,
-			role: true,
-			createdAt: true,
-		},
-	});
 
-	return users;
+	// const users = await prisma.user.findMany({
+	// 	where: {
+	// 		role: "Intern",
+	// 	},
+	// 	orderBy: {
+	// 		createdAt: "desc",
+	// 	},
+	// 	select: {
+	// 		id: true,
+	// 		name: true,
+	// 		email: true,
+	// 		password: false,
+	// 		role: true,
+	// 		createdAt: true,
+	// 	},
+	// });
+
+	// return users;
+
+	const query = `
+    query {
+      user(
+        where: {role: {_eq: "Intern"}}
+        order_by: {createdAt: desc}
+      ) {
+        id
+        name
+        email
+        role
+        createdAt
+      }
+    }
+  `;
+
+	const data = await hasuraFetch(query);
+
+	return data.user;
+};
+
+
+// Not Admin
+export const getUser = async () => {
+	// const users = await prisma.user.findMany({
+	// 	where: {
+	// 		role: {
+	// 			not:"Admin"
+	// 		},
+	// 		isHead:false
+	// 	},
+	// 	orderBy: {
+	// 		createdAt: "desc",
+	// 	},
+	// 	select: {
+	// 		id: true,
+	// 		name: true,
+	// 		email: true,
+	// 		password: false,
+	// 		role: true,
+	// 		createdAt: true,
+	// 	},
+	// });
+
+	const query = `query GetUser {
+		user(where: {isHead: {_eq: false}, role: {_nilike: "Admin"}}) {
+		  college
+		  departmentId
+		  email
+		  gender
+		  id
+		  name
+		  password
+		  role
+		  createdAt
+		  emailVerified
+		  isHead
+		}
+	  }`;
+
+	const users = await hasuraFetch(query);
+	return users.user;
 };
 
 export const getSingleUser = async (InternId) => {
@@ -37,4 +102,33 @@ export const getSingleUser = async (InternId) => {
 		},
 	});
 	return user;
+};
+// Get Departments with members
+export const Department = async () => {
+	// const department = await prisma.department.findMany({
+	// 	include: {
+	// 		head: true,
+	// 		members: true,
+	// 	},
+	// });
+	const query = `query GetDepartment {
+		Department {
+		  headId
+		  id
+		  name
+		  createdAt
+		  users {
+			name
+			role
+			id
+			gender
+			email
+			departmentId
+			college
+			createdAt
+		  }
+		}
+	  }`;
+	  const department = await hasuraFetch(query);
+	return department.Department;
 };

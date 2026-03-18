@@ -30,8 +30,10 @@ const NavItems: NavLink[] = [
 	{ label: "Home", href: "/" },
 	{ label: "About us", href: "/About" },
 	{ label: "Intern", href: "/Intern", roles: ["Intern"] },
-	{ label: "Admin", href: "/Admin", roles: ["Admin"] },
+	{ label: "User", href: "/Admin", roles: ["Admin"] },
+	{ label: "Departments", href: "/Departments", roles: ["Admin"] },
 	{ label: "Add User", href: "/AddUser", roles: ["Admin"] },
+	{ label: "Add Department", href: "/AddDepartment", roles: ["Admin"] },
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ title, links = NavItems }) => {
