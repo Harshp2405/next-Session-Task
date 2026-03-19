@@ -11,6 +11,7 @@ export const loadUser = () => async (dispatch) => {
 		}
 
 		dispatch(setUser(session.user));
+		return session.user;
 	} catch (error) {
 		console.error("Failed to load user:", error);
 		dispatch(logout());

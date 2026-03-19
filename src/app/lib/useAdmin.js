@@ -3,7 +3,7 @@ import { hasuraFetch } from "./hasura";
 import { prisma } from "./prisma";
 
 // Return Interns
-export const userlist = async () => {
+export const userlist = async (id) => {
 
 	// const users = await prisma.user.findMany({
 	// 	where: {
@@ -25,27 +25,33 @@ export const userlist = async () => {
 	// return users;
 
 	const query = `
-    query {
-      user(
-        where: {role: {_eq: "Intern"}}
-        order_by: {createdAt: desc}
-      ) {
-        id
+  query ($id: String!) {
+    user(
+      where: { id: { _neq: $id } }
+      order_by: { createdAt: desc }
+    ) {
+      id
+      name
+      email
+      role
+      createdAt
+      Department {
         name
-        email
-        role
-        createdAt
       }
     }
-  `;
+  }
+`;
 
-	const data = await hasuraFetch(query);
+  const variables = {
+		id: id ? `%${id}%` : "%",
+	};
 
+	const data = await hasuraFetch(query, variables);
+	// console.log("GraphQL response:", data.user);
 	return data.user;
 };
 
-
-// Not Admin
+// Not Admin and who is Not Head Of Dept
 export const getUser = async () => {
 	// const users = await prisma.user.findMany({
 	// 	where: {
@@ -99,10 +105,17 @@ export const getSingleUser = async (InternId) => {
 			password: false,
 			role: true,
 			createdAt: true,
+			college:true,
+			department:{
+				select:{
+					name:true
+				}
+			},
 		},
 	});
 	return user;
 };
+
 // Get Departments with members
 export const Department = async () => {
 	// const department = await prisma.department.findMany({
@@ -132,3 +145,31 @@ export const Department = async () => {
 	  const department = await hasuraFetch(query);
 	return department.Department;
 };
+
+export const selectDepartment = async ()=>{
+	const department = await prisma.department.findMany({
+		select:{
+			name:true,
+			id:true
+		}
+	})
+
+	return department;
+}
+
+export const ListOfHead = async () =>{
+	const head = await prisma.user.findMany({
+		where:{
+			isHead : true
+		},select:{
+			headOf:{
+				select:{
+					head:true,
+					name:true
+				}
+			}
+		}
+	})
+
+	return head;
+}

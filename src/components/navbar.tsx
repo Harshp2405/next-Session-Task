@@ -7,7 +7,7 @@ import { User } from "../../types/User";
 interface NavLink {
 	label: string;
 	href: string;
-	roles?: ("Admin" | "Intern")[];
+	roles?: ("Admin" | "Intern" | "Head")[];
 }
 
 interface NavbarProps {
@@ -30,10 +30,14 @@ const NavItems: NavLink[] = [
 	{ label: "Home", href: "/" },
 	{ label: "About us", href: "/About" },
 	{ label: "Intern", href: "/Intern", roles: ["Intern"] },
+	//  Admin Routes
 	{ label: "User", href: "/Admin", roles: ["Admin"] },
 	{ label: "Departments", href: "/Departments", roles: ["Admin"] },
 	{ label: "Add User", href: "/AddUser", roles: ["Admin"] },
 	{ label: "Add Department", href: "/AddDepartment", roles: ["Admin"] },
+	{ label: "List Head", href: "/HeadList", roles: ["Admin"] },
+	// Department Head Routes
+	{ label: "User", href: "/Head", roles: ["Head"] },
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ title, links = NavItems }) => {

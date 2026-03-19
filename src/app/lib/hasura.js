@@ -12,5 +12,12 @@ export async function hasuraFetch(query, variables = {}) {
 	});
 
 	const json = await res.json();
+
+	if (json.errors) {
+		console.error("Hasura GraphQL Errors:", json.errors);
+	}
+
+	console.log("Full Hasura response:", json); 
+
 	return json.data;
 }
