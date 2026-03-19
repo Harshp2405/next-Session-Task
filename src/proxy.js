@@ -25,48 +25,69 @@
 // 	return NextResponse.next();
 // }
 
-
 // export const config = {
 // 	matcher: ["/", "/Login", "/Register", "/Admin/:path*", "/Intern/:path*"],
 // };
 
-
 // middleware.js
-import { NextResponse } from "next/server";
-import { jwtVerify } from "jose";
+
 import { getToken } from "next-auth/jwt";
+import jwt from "jsonwebtoken";
+import { NextResponse } from "next/server";
 
 export async function proxy(req) {
-	const url = req.nextUrl.clone();
-	const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-	const { pathname } = url;
+  const url = req.nextUrl.clone();
+  const { pathname } = url;
 
-	const publicPaths = ["/Login", "/Register", "/api/auth"];
-	const isPublic = publicPaths.some((path) => pathname.startsWith(path));
+  // Paths that don't require authentication
+  const publicPaths = ["/Login", "/Register", "/api/auth"];
+  const isPublic = publicPaths.some((path) => pathname.startsWith(path));
 
-	if (!token && !isPublic) {
-		return NextResponse.redirect(new URL("/Login", req.url));
-	}
+  // Get JWT from NextAuth cookies
+  const token = await getToken({
+		req,
+		secret: process.env.NEXTAUTH_SECRET,
+		decode: async ({ token, secret }) => {
+			try {
+				return jwt.verify(token, secret);
+			} catch (e) {
+				return null;
+			}
+		},
+	});
 
-	if (token) {
-		const role = token.role;
+  // Print the token returned by getToken
+//   console.log("Decoded token from getToken():", token);
 
-		if (pathname.startsWith("/Admin") && role !== "Admin") {
-			return NextResponse.redirect(new URL("/", req.url));
-		}
+  
 
-		if (pathname.startsWith("/Intern") && role !== "Intern") {
-			return NextResponse.redirect(new URL("/", req.url));
-		}
+  // If no token and trying to access a protected route → redirect to login
+  if (!token && !isPublic) {
+    return NextResponse.redirect(new URL("/Login", req.url));
+  }
 
-		if (isPublic) {
-			return NextResponse.redirect(new URL("/", req.url));
-		}
-	}
+  // If token exists, check roles
+  if (token) {
+    const role = token.role;
 
-	return NextResponse.next();
+    // Role-based access control
+    if (pathname.startsWith("/Admin") && role !== "Admin") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    if (pathname.startsWith("/Intern") && role !== "Intern") {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+
+    // Optional: prevent authenticated users from visiting public pages
+    if (isPublic) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
-	matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
 };

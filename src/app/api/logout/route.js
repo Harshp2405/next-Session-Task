@@ -5,7 +5,7 @@ import { prisma } from "../../lib/prisma";
 export async function POST(req) {
 	try {
 		const cookieStore = cookies();
-		const token = cookieStore.get("token")?.value;
+		const token = cookieStore.get("next-auth.session-token")?.value;
 
 		if (token) {
 			// Delete session from database

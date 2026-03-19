@@ -17,7 +17,6 @@ export const authOptions = {
 				const user = await prisma.user.findUnique({
 					where: { email: credentials.email.toLowerCase() },
 				});
-
 				if (!user) return null;
 
 				const isValid = await bcrypt.compare(
@@ -26,6 +25,7 @@ export const authOptions = {
 				);
 				if (!isValid) return null;
 
+				// Generate session token for DB
 				const sessionToken = crypto.randomUUID();
 				const expires = new Date(Date.now() + 60 * 60 * 1000);
 
@@ -37,28 +37,38 @@ export const authOptions = {
 					},
 				});
 
+				// Generate signed JWT (JWS) for frontend
 				const accessToken = jwt.sign(
 					{ id: user.id, email: user.email, role: user.role },
 					process.env.JWT_SECRET,
-					{ expiresIn: "1h" },
+					{ algorithm: "HS256", expiresIn: "1h" },
 				);
-
-				
 
 				return {
 					id: user.id,
 					name: user.name,
 					email: user.email,
 					role: user.role,
-					sessionToken,
 					accessToken,
+					sessionToken, // stored in JWT but not exposed to frontend by default
 				};
 			},
 		}),
 	],
 
 	session: {
-		strategy: "jwt", // can still use JWT sessions for frontend
+		strategy: "jwt",
+	},
+
+	jwt: {
+		encode({ token, secret }) {
+			if (!token) return "";
+			return jwt.sign(token, secret, { algorithm: "HS256" });
+		},
+		decode({ token, secret }) {
+			if (!token) return null;
+			return jwt.verify(token, secret);
+		},
 	},
 
 	callbacks: {
@@ -67,7 +77,7 @@ export const authOptions = {
 				token.id = user.id;
 				token.role = user.role;
 				token.accessToken = user.accessToken;
-				token.sessionToken = user.sessionToken;
+				token.sessionToken = user.sessionToken; // used for logout
 			}
 			return token;
 		},
@@ -99,18 +109,6 @@ export const authOptions = {
 	},
 
 	secret: process.env.NEXTAUTH_SECRET,
-
-	cookies: {
-		sessionToken: {
-			name: "next-auth.session-token",
-			options: {
-				httpOnly: true, // cannot be accessed by JS
-				secure: process.env.NODE_ENV === "production",
-				sameSite: "lax",
-				path: "/",
-			},
-		},
-	},
 };
 
 const handler = NextAuth(authOptions);

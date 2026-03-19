@@ -41,8 +41,8 @@ const NavItems: NavLink[] = [
 ];
 
 const Navbar: React.FC<NavbarProps> = ({ title, links = NavItems }) => {
-	const { user } = useSelector((state: RootState) => state.auth);
-	// console.log(user)
+	const { user, isLoggedIn } = useSelector((state: RootState) => state.auth);
+	// console.log(user, "NavBar")
 
 	// Filter links by role
 	const filteredLinks = links.filter((link) => {
@@ -51,8 +51,10 @@ const Navbar: React.FC<NavbarProps> = ({ title, links = NavItems }) => {
 		return link.roles.includes(user.role);
 	});
 
+
 	return (
 		<nav className="text-white bg-black text-base p-4">
+			
 			<div className="flex justify-items-start items-center">
 				<h1 className="text-xl font-bold mr-6">{title}</h1>
 				<ul className="flex space-x-4">
