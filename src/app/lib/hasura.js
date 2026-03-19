@@ -1,3 +1,7 @@
+import { getSession } from "next-auth/react";
+
+
+
 export async function hasuraFetch(query, variables = {}) {
 	const res = await fetch(process.env.HASURA_URL, {
 		method: "POST",

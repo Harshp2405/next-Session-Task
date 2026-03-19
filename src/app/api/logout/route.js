@@ -2,28 +2,29 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { prisma } from "../../lib/prisma";
 
-
 export async function POST(req) {
 	try {
-		const cookieStore = await cookies();
+		const cookieStore = cookies();
 		const token = cookieStore.get("token")?.value;
 
-		if (token && prisma.session) {
+		if (token) {
+			// Delete session from database
 			await prisma.session.deleteMany({
-				where: { token: token },
+				where: { sessionToken: token },
 			});
 		}
-		cookieStore.delete("token");
 
-		return NextResponse.json({ message: "Logged out" }, { status: 200 });
+		// Remove the cookie by setting it expired
+		const res = NextResponse.json({ message: "Logged out" });
+		res.cookies.set("token", "", { maxAge: 0, path: "/" });
+
+		return res;
 	} catch (error) {
 		console.error("Logout Error:", error);
-		const cookieStore = await cookies();
-		cookieStore.delete("token");
 
-		return NextResponse.json(
-			{ error: "Logged out with errors" },
-			{ status: 200 },
-		);
+		const res = NextResponse.json({ error: "Logged out with errors" });
+		res.cookies.set("token", "", { maxAge: 0, path: "/" });
+
+		return res;
 	}
 }
