@@ -79,7 +79,7 @@ export async function proxy(req) {
       return NextResponse.redirect(new URL("/", req.url));
     }
 
-    // Optional: prevent authenticated users from visiting public pages
+    // Optional: prevent authenticated user from visiting public pages
     if (isPublic) {
       return NextResponse.redirect(new URL("/", req.url));
     }

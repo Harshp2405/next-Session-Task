@@ -79,12 +79,9 @@ model user {
 model Department {
   id        String   @id @default(uuid())
   name      String
-
   headId    String   @unique
   head      user     @relation("DepartmentHead", fields: [headId], references: [id])
-
   members   user[]   @relation("DepartmentMembers")
-
   createdAt DateTime @default(now())
 }
 

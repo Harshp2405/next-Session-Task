@@ -5,7 +5,7 @@ import { prisma } from "./prisma";
 // Return Interns
 export const userlist = async (id) => {
 
-	// const users = await prisma.user.findMany({
+	// const user = await prisma.user.findMany({
 	// 	where: {
 	// 		role: "Intern",
 	// 	},
@@ -22,7 +22,7 @@ export const userlist = async (id) => {
 	// 	},
 	// });
 
-	// return users;
+	// return user;
 
 	const query = `
   query ($id: String!) {
@@ -53,7 +53,7 @@ export const userlist = async (id) => {
 
 // Not Admin and who is Not Head Of Dept
 export const getUser = async () => {
-	// const users = await prisma.user.findMany({
+	// const user = await prisma.user.findMany({
 	// 	where: {
 	// 		role: {
 	// 			not:"Admin"
@@ -89,8 +89,8 @@ export const getUser = async () => {
 		}
 	  }`;
 
-	const users = await hasuraFetch(query);
-	return users.user;
+	const user = await hasuraFetch(query);
+	return user.user;
 };
 
 export const getSingleUser = async (InternId) => {
@@ -130,7 +130,7 @@ export const Department = async () => {
 		  id
 		  name
 		  createdAt
-		  users {
+		  user {
 			name
 			role
 			id

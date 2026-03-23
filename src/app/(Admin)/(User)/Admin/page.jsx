@@ -16,13 +16,13 @@ import { loadUser } from "../../../../redux/authActions";
 import { useDispatch } from "react-redux";
 
 export default function Admin() {
-	const [users, setUsers] = useState([]);
+	const [user, setUsers] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [searchTerm, setSearchTerm] = useState("");
 	const dispatch = useDispatch();
 	
 	const router = useRouter();
-	// console.log(users)
+	// console.log(user)
 
 	useEffect(() => {
 		const fetchUsers = async () => {
@@ -37,7 +37,7 @@ export default function Admin() {
 				console.log(data)
 				setUsers(data);
 			} catch (error) {
-				console.error("Error fetching users:", error);
+				console.error("Error fetching user:", error);
 			} finally {
 				setLoading(false);
 			}
@@ -50,7 +50,7 @@ export default function Admin() {
 	}, []);
 
 	// Filter logic for the search bar
-	const filteredUsers = users.filter(
+	const filteredUsers = user.filter(
 		(user) =>
 			user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			user.email.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -78,7 +78,7 @@ export default function Admin() {
 					<Search className="absolute left-3 top-1/2 -translate-y-1/2 text-white-400 w-4 h-4" />
 					<input
 						type="text"
-						placeholder="Search users..."
+						placeholder="Search user..."
 						className="pl-10 pr-4 py-2 border border-slate-200 rounded-lg  focus:ring-2 focus:ring-blue-500 outline-none w-full md:w-64 transition-all"
 						value={searchTerm}
 						onChange={(e) => setSearchTerm(e.target.value)}
@@ -121,7 +121,7 @@ export default function Admin() {
 							) : filteredUsers.length === 0 ? (
 								<tr>
 									<td colSpan={4} className="py-20 text-center text-white-500">
-										No users matching your search.
+										No user matching your search.
 									</td>
 								</tr>
 							) : (
@@ -199,7 +199,7 @@ export default function Admin() {
 
 				{/* Footer info */}
 				<div className="p-4  border-t border-slate-200 text-xs text-white-400 flex justify-between">
-					<span>Showing {filteredUsers.length} total users</span>
+					<span>Showing {filteredUsers.length} total user</span>
 					<span>System updated: {new Date().toLocaleDateString()}</span>
 				</div>
 			</div>

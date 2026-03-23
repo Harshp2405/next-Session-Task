@@ -23,7 +23,7 @@ const page = () => {
 
 			<div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
 				{departments.map((dept) => {
-					const head = dept.users.find((u) => u.id === dept.headId);
+					const head = dept.user.find((u) => u.id === dept.headId);
 
 					return (
 						<div
@@ -32,7 +32,7 @@ const page = () => {
 							{/* Department Name */}
 							<h2 className="text-xl font-semibold mb-2">{dept.name}</h2>
 							<p className="text-xs text-gray-400 mb-2">
-								{dept.users.length} Members
+								{dept.user.length} Members
 							</p>
 							{/* Head */}
 							<p className="text-sm text-gray-400 mb-3">
@@ -47,7 +47,7 @@ const page = () => {
 								<p className="text-sm text-gray-400 mb-2">Members:</p>
 
 								<div className="space-y-2">
-									{dept.users.map((user) => (
+									{dept.user.map((user) => (
 										<div
 											key={user.id}
 											className="flex justify-between items-center bg-gray-700 px-3 py-2 rounded-md">
@@ -62,7 +62,7 @@ const page = () => {
 										</div>
 									))}
 
-									{dept.users.length === 0 && (
+									{dept.user.length === 0 && (
 										<p className="text-xs text-gray-400">No members yet</p>
 									)}
 								</div>
